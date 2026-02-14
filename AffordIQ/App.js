@@ -3,7 +3,9 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import InputScreen from './src/screens/Input';
+import InputScreen from './src/screens/InputScreen';
+import ResultScreen from './src/screens/ResultScreen';
+import CompareScreen from './src/screens/compareScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +48,8 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Input" component={InputScreen} />
+        <Stack.Screen name="Result" component={ResultScreen} />
+        <Stack.Screen name="Compare" component={CompareScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
