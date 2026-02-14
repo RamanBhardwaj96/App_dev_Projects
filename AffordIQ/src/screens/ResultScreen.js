@@ -1,5 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 function generateExplanation(emi, emiRatio, score) {
   const ratio = parseFloat(emiRatio);
@@ -116,6 +118,7 @@ export default function ResultScreen({ route, navigation }) {
   const explanations = generateExplanation(emi, emiRatio, score);
 
   return (
+     <SafeAreaView style={{ flex: 1, backgroundColor: '#0F172A' }}>
     <View style={styles.container}>
       <Text style={styles.title}>AffordIQ Result</Text>
 
@@ -176,14 +179,15 @@ export default function ResultScreen({ route, navigation }) {
         </Text>
       </TouchableOpacity>
     </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#0F172A",
     padding: 20,
+    paddingBottom: 40,
     justifyContent: "center",
   },
   title: {

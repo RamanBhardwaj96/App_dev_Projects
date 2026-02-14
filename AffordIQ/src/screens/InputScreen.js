@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  Alert,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 /* -------------------- INDIAN NUMBER TO WORDS -------------------- */
 
@@ -16,15 +16,39 @@ function numberToIndianWords(num) {
   if (!num) return "";
 
   const a = [
-    "", "One ", "Two ", "Three ", "Four ", "Five ", "Six ",
-    "Seven ", "Eight ", "Nine ", "Ten ", "Eleven ", "Twelve ",
-    "Thirteen ", "Fourteen ", "Fifteen ", "Sixteen ",
-    "Seventeen ", "Eighteen ", "Nineteen "
+    "",
+    "One ",
+    "Two ",
+    "Three ",
+    "Four ",
+    "Five ",
+    "Six ",
+    "Seven ",
+    "Eight ",
+    "Nine ",
+    "Ten ",
+    "Eleven ",
+    "Twelve ",
+    "Thirteen ",
+    "Fourteen ",
+    "Fifteen ",
+    "Sixteen ",
+    "Seventeen ",
+    "Eighteen ",
+    "Nineteen ",
   ];
 
   const b = [
-    "", "", "Twenty ", "Thirty ", "Forty ",
-    "Fifty ", "Sixty ", "Seventy ", "Eighty ", "Ninety "
+    "",
+    "",
+    "Twenty ",
+    "Thirty ",
+    "Forty ",
+    "Fifty ",
+    "Sixty ",
+    "Seventy ",
+    "Eighty ",
+    "Ninety ",
   ];
 
   const formatNumber = (n) => {
@@ -57,10 +81,10 @@ function numberToIndianWords(num) {
 
 function formatIndianNumber(x) {
   if (!x) return "";
-  const num = x.toString().replace(/,/g, '');
+  const num = x.toString().replace(/,/g, "");
   const lastThree = num.substring(num.length - 3);
   const otherNumbers = num.substring(0, num.length - 3);
-  if (otherNumbers !== '') {
+  if (otherNumbers !== "") {
     return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
   }
   return lastThree;
@@ -79,14 +103,13 @@ function calculateAffordabilityScore(emiRatio) {
 /* -------------------- COMPONENT -------------------- */
 
 export default function InputScreen({ navigation, route }) {
-
   const compareMode = route?.params?.compareMode === true;
   const previousData = route?.params?.previousData || null;
 
-  const [income, setIncome] = useState('');
-  const [price, setPrice] = useState('');
-  const [interest, setInterest] = useState('');
-  const [years, setYears] = useState('');
+  const [income, setIncome] = useState("");
+  const [price, setPrice] = useState("");
+  const [interest, setInterest] = useState("");
+  const [years, setYears] = useState("");
 
   const calculateEMI = () => {
     const P = parseFloat(price);
@@ -99,9 +122,7 @@ export default function InputScreen({ navigation, route }) {
       return;
     }
 
-    const emi =
-      (P * r * Math.pow(1 + r, n)) /
-      (Math.pow(1 + r, n) - 1);
+    const emi = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
 
     const emiRatio = (emi / incomeValue) * 100;
     const score = calculateAffordabilityScore(emiRatio);
@@ -109,13 +130,13 @@ export default function InputScreen({ navigation, route }) {
     const resultData = {
       emi: emi.toFixed(0),
       emiRatio: emiRatio.toFixed(1),
-      score
+      score,
     };
 
     if (compareMode && previousData) {
       navigation.navigate("Compare", {
         option1: previousData,
-        option2: resultData
+        option2: resultData,
       });
     } else {
       navigation.navigate("Result", resultData);
@@ -123,9 +144,8 @@ export default function InputScreen({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0F172A' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0F172A" }}>
       <ScrollView contentContainerStyle={styles.container}>
-
         <Text style={styles.title}>Enter Details</Text>
 
         {/* INCOME */}
@@ -136,12 +156,12 @@ export default function InputScreen({ navigation, route }) {
           keyboardType="numeric"
           value={formatIndianNumber(income)}
           onChangeText={(text) => {
-            const cleaned = text.replace(/,/g, '');
+            const cleaned = text.replace(/,/g, "");
             if (!isNaN(cleaned)) setIncome(cleaned);
           }}
         />
 
-        {income !== '' && !isNaN(income) && (
+        {income !== "" && !isNaN(income) && (
           <Text style={styles.wordText}>
             {numberToIndianWords(parseInt(income))} Rupees
           </Text>
@@ -155,12 +175,12 @@ export default function InputScreen({ navigation, route }) {
           keyboardType="numeric"
           value={formatIndianNumber(price)}
           onChangeText={(text) => {
-            const cleaned = text.replace(/,/g, '');
+            const cleaned = text.replace(/,/g, "");
             if (!isNaN(cleaned)) setPrice(cleaned);
           }}
         />
 
-        {price !== '' && !isNaN(price) && (
+        {price !== "" && !isNaN(price) && (
           <Text style={styles.wordText}>
             {numberToIndianWords(parseInt(price))} Rupees
           </Text>
@@ -176,6 +196,10 @@ export default function InputScreen({ navigation, route }) {
           onChangeText={setInterest}
         />
 
+        {interest !== "" && !isNaN(interest) && (
+          <Text style={styles.wordText}>{interest}% Annual Interest</Text>
+        )}
+
         {/* TENURE */}
         <TextInput
           placeholder="Loan Tenure (Years)"
@@ -186,10 +210,13 @@ export default function InputScreen({ navigation, route }) {
           onChangeText={setYears}
         />
 
+        {years !== "" && !isNaN(years) && (
+          <Text style={styles.wordText}>{years} Years Loan Tenure</Text>
+        )}
+
         <TouchableOpacity style={styles.button} onPress={calculateEMI}>
           <Text style={styles.buttonText}>Calculate</Text>
         </TouchableOpacity>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -205,30 +232,30 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     marginBottom: 20,
   },
   input: {
-    backgroundColor: '#1E293B',
-    color: '#FFFFFF',
+    backgroundColor: "#1E293B",
+    color: "#FFFFFF",
     padding: 15,
     borderRadius: 8,
     marginBottom: 10,
   },
   wordText: {
-    color: '#94A3B8',
+    color: "#94A3B8",
     marginBottom: 15,
     fontSize: 14,
   },
   button: {
-    backgroundColor: '#14B8A6',
+    backgroundColor: "#14B8A6",
     padding: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
 });
