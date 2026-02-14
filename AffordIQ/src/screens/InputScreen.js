@@ -9,6 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /* -------------------- INDIAN NUMBER TO WORDS -------------------- */
 
@@ -111,7 +112,7 @@ export default function InputScreen({ navigation, route }) {
   const [interest, setInterest] = useState("");
   const [years, setYears] = useState("");
 
-  const calculateEMI = () => {
+  const calculateEMI = async () => {
     const P = parseFloat(price);
     const r = parseFloat(interest) / 12 / 100;
     const n = parseFloat(years) * 12;
@@ -131,8 +132,21 @@ export default function InputScreen({ navigation, route }) {
       emi: emi.toFixed(0),
       emiRatio: emiRatio.toFixed(1),
       score,
+      timestamp: new Date().toISOString(),
+      income: incomeValue,
     };
 
+    // 🔥 Save to AsyncStorage
+    try {
+      const existingData = await AsyncStorage.getItem("affordiq_history");
+      const history = existingData ? JSON.parse(existingData) : [];
+      history.unshift(resultData); // newest first
+      await AsyncStorage.setItem("affordiq_history", JSON.stringify(history));
+    } catch (error) {
+      console.log("Storage Error:", error);
+    }
+
+    // 🔥 Navigate
     if (compareMode && previousData) {
       navigation.navigate("Compare", {
         option1: previousData,
