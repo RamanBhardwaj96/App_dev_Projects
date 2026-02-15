@@ -1,331 +1,273 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Progress from 'react-native-progress';
 
-// function generateExplanation(emi, emiRatio, score) {
-//   const ratio = parseFloat(emiRatio);
-
-//   const positiveOpeners = [
-//     "This looks financially comfortable.",
-//     "You're in a stable position for this purchase.",
-//     "This appears well within your affordability range.",
-//   ];
-
-//   const moderateOpeners = [
-//     "This purchase stretches your finances slightly.",
-//     "This is manageable but requires discipline.",
-//     "You're entering a moderate risk zone.",
-//   ];
-
-//   const riskyOpeners = [
-//     "This could strain your finances significantly.",
-//     "This level of EMI may create financial pressure.",
-//     "You're entering a financially aggressive zone.",
-//   ];
-
-//   const safeAdvice = [
-//     "Your EMI burden is healthy relative to income.",
-//     "You still maintain flexibility for savings and emergencies.",
-//     "This leaves room for investments and lifestyle expenses.",
-//   ];
-
-//   const moderateAdvice = [
-//     "Consider increasing down payment to improve stability.",
-//     "Reducing tenure or loan amount could strengthen your position.",
-//     "Ensure you maintain at least 6 months emergency savings.",
-//   ];
-
-//   const riskyAdvice = [
-//     "Re-evaluate the purchase amount before committing.",
-//     "High EMI ratios reduce flexibility during income shocks.",
-//     "You may want to delay this purchase or increase income buffer.",
-//   ];
-
-//   function random(arr) {
-//     return arr[Math.floor(Math.random() * arr.length)];
-//   }
-
-//   let opener = "";
-//   let advice = "";
-
-//   if (score >= 75) {
-//     opener = random(positiveOpeners);
-//     advice = random(safeAdvice);
-//   } else if (score >= 40) {
-//     opener = random(moderateOpeners);
-//     advice = random(moderateAdvice);
-//   } else {
-//     opener = random(riskyOpeners);
-//     advice = random(riskyAdvice);
-//   }
-
-//   return `
-// Your estimated EMI is ₹${emi}, consuming approximately ${ratio}% of your monthly income.
-
-// ${opener}
-
-// ${advice}
-//   `;
-// }
-
-function generateAIStyleAdvice(income, emi, emiRatio, score) {
-  const ratio = parseFloat(emiRatio);
-  const incomeNum = parseFloat(income);
-  const emiNum = parseFloat(emi);
-
-  const disposableIncome = incomeNum - emiNum;
-
-  let riskProfile = "";
-  let mindsetAdvice = "";
-  let strategicAdvice = "";
-
-  // Risk Classification
-  if (score >= 75) {
-    riskProfile =
-      "Your financial position appears stable relative to this commitment.";
-    mindsetAdvice =
-      "This level of EMI suggests controlled leverage rather than aggressive borrowing.";
-    strategicAdvice =
-      "You may proceed, but continue maintaining liquidity for at least 6 months of expenses.";
-  } else if (score >= 40) {
-    riskProfile = "This purchase introduces moderate financial pressure.";
-    mindsetAdvice =
-      "While manageable, it reduces flexibility in uncertain income scenarios.";
-    strategicAdvice =
-      "Consider increasing down payment or reducing loan tenure to improve structural safety.";
-  } else {
-    riskProfile =
-      "This commitment may significantly strain your financial stability.";
-    mindsetAdvice =
-      "High fixed obligations reduce adaptability during market or career disruptions.";
-    strategicAdvice =
-      "Re-evaluating the purchase amount or delaying the decision may improve long-term resilience.";
-  }
-
-  return `
-AffordIQ Analysis:
-
-Your projected EMI of ₹${emi} represents ${ratio}% of your monthly income.
-
-After EMI, your estimated disposable income is ₹${disposableIncome.toFixed(0)} per month.
-
-${riskProfile}
-
-${mindsetAdvice}
-
-Recommendation:
-${strategicAdvice}
-  `;
-}
+/* -------------------- INDIAN FORMAT -------------------- */
 
 function formatIndianNumber(x) {
-  if (!x) return "";
-  const num = x.toString().replace(/,/g, "");
+  if (!x && x !== 0) return "";
+  const num = x.toString().replace(/,/g, '');
   const lastThree = num.substring(num.length - 3);
   const otherNumbers = num.substring(0, num.length - 3);
-  if (otherNumbers !== "") {
+  if (otherNumbers !== '') {
     return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
   }
   return lastThree;
 }
 
-export default function ResultScreen({ route, navigation }) {
-  const { itemName, emi, emiRatio, score, income, loanAmount, tenureMonths } =
-    route.params;
-  const originalsalryratio = parseFloat(emiRatio);
-  const stressedRatio = originalsalryratio / 0.9; // simulate 10% income drop
-  const incomeValue = parseFloat(emi) / (parseFloat(emiRatio) / 100);
-  const remainingIncome = incomeValue - parseFloat(emi);
+/* -------------------- AI SIMULATION -------------------- */
 
-  const emergencyMonths =
-    remainingIncome > 0 ? (remainingIncome * 6) / incomeValue : 0;
+function generateAIStyleAdvice(income, emi, emiRatio, score) {
+  const ratio = parseFloat(emiRatio);
+  const disposableIncome = parseFloat(income) - parseFloat(emi);
+
+  let message = "";
+
+  if (score >= 75) {
+    message = "This commitment appears financially stable and well within a safe borrowing range.";
+  } else if (score >= 40) {
+    message = "This purchase introduces moderate financial pressure. Consider improving structure for better flexibility.";
+  } else {
+    message = "This obligation may significantly strain your finances and reduce adaptability.";
+  }
+
+  return `
+Your EMI of ₹${emi} consumes ${ratio}% of your monthly income.
+
+After EMI, your estimated disposable income is ₹${disposableIncome.toFixed(0)} per month.
+
+${message}
+  `;
+}
+
+/* -------------------- COMPONENT -------------------- */
+
+export default function ResultScreen({ route, navigation }) {
+
+  const {
+    itemName,
+    emi,
+    emiRatio,
+    score,
+    income,
+    loanAmount,
+    tenureMonths
+  } = route.params;
 
   const totalPayment = parseFloat(emi) * tenureMonths;
   const totalInterest = totalPayment - loanAmount;
-  const interestPercent = ((totalInterest / loanAmount) * 100).toFixed(1);
 
-  let riskLevel = "Low Risk";
-  let riskColor = "#22C55E";
+  /* ---------- 10% INCOME DROP SIMULATION ---------- */
 
-  if (score < 70) {
-    riskLevel = "Moderate Risk";
-    riskColor = "#FACC15";
-  }
+  const stressedRatio = (parseFloat(emiRatio) / 0.9).toFixed(1);
 
-  if (score < 40) {
-    riskLevel = "High Risk";
-    riskColor = "#EF4444";
-  }
+  let stressColor =
+    stressedRatio <= 35 ? "#22C55E" :
+    stressedRatio <= 50 ? "#FACC15" :
+    "#EF4444";
 
-  let stressRisk = "Safe";
-  let stressColor = "#22C55E";
+  /* ---------- EMERGENCY STABILITY CHECK ---------- */
 
-  if (stressedRatio > 35) {
-    stressRisk = "Warning Zone";
-    stressColor = "#FACC15";
-  }
+  const disposableIncome = parseFloat(income) - parseFloat(emi);
+  const emergencyMonths =
+    disposableIncome > 0
+      ? ((disposableIncome * 6) / parseFloat(income)).toFixed(1)
+      : 0;
 
-  if (stressedRatio > 45) {
-    stressRisk = "High Stress Risk";
-    stressColor = "#EF4444";
-  }
+  let emergencyColor =
+    emergencyMonths >= 6 ? "#22C55E" :
+    emergencyMonths >= 3 ? "#FACC15" :
+    "#EF4444";
 
-  let emergencyStatus = "Healthy";
-  let emergencyColor = "#22C55E";
-
-  if (emergencyMonths < 3) {
-    emergencyStatus = "Weak Emergency Buffer";
-    emergencyColor = "#EF4444";
-  } else if (emergencyMonths < 6) {
-    emergencyStatus = "Moderate Buffer";
-    emergencyColor = "#FACC15";
-  }
-  // const explanations = generateExplanation(emi, emiRatio, score);
   const aiAdvice = generateAIStyleAdvice(income, emi, emiRatio, score);
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0F172A" }}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>AffordIQ Result</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0F172A' }}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
 
-        <Text style={styles.value}>Monthly EMI</Text>
-        <Text style={styles.big}>₹{emi}</Text>
-
-        <Text style={styles.value}>
-          EMI Ratio (Income Percentage to pay EMI)
+        {/* HEADER */}
+        <Text style={styles.headerTitle}>
+          {itemName || "Loan Analysis"}
         </Text>
-        <Text style={styles.big}>{emiRatio}%</Text>
 
-        <Text style={[styles.value, { marginTop: 20 }]}>
-          Affordability Score
+        <Text style={styles.headerSub}>
+          Financial Overview
         </Text>
-        <Text style={styles.score}>{score}/100</Text>
 
-        <View style={{ marginTop: 25 }}>
-          <Text style={{ color: "#94A3B8" }}>Loan Amount</Text>
-          <Text style={{ color: "#FFFFFF", fontSize: 18 }}>
-            ₹{loanAmount.toLocaleString("en-IN")}
+        {/* SCORE RING */}
+        <View style={{ alignItems: 'center', marginVertical: 15 }}>
+          <Progress.Circle
+            size={140}
+            progress={score / 100}
+            showsText={true}
+            formatText={() => `${score}`}
+            thickness={12}
+            color={
+              score >= 75 ? "#22C55E" :
+              score >= 40 ? "#FACC15" :
+              "#EF4444"
+            }
+            unfilledColor="#1E293B"
+            borderWidth={0}
+            textStyle={{ color: '#FFFFFF', fontSize: 28, fontWeight: 'bold' }}
+          />
+        </View>
+
+        {/* LOAN SUMMARY */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>LOAN SUMMARY</Text>
+
+          <Text style={styles.valueLarge}>
+            EMI: ₹{formatIndianNumber(emi)}
           </Text>
 
-          <Text style={{ color: "#94A3B8", marginTop: 10 }}>
-            Total Interest Paid
-          </Text>
-          <Text style={{ color: "#F87171", fontSize: 18 }}>
-            ₹{formatIndianNumber(totalInterest)}
+          <Text style={styles.valueSmall}>
+            Loan Amount: ₹{formatIndianNumber(loanAmount.toFixed(0))}
           </Text>
 
-          <Text style={{ color: "#94A3B8", marginTop: 5 }}>
-            Interest Burden: {interestPercent}% of loan
+          <Text style={styles.valueSmall}>
+            Total Interest: ₹{formatIndianNumber(totalInterest.toFixed(0))}
           </Text>
 
-          <Text style={{ color: "#94A3B8", marginTop: 10 }}>Total Payable</Text>
-          <Text style={{ color: "#FFFFFF", fontSize: 18 }}>
-            ₹{formatIndianNumber(totalPayment)}
+          <Text style={styles.valueSmall}>
+            Total Payable: ₹{formatIndianNumber(totalPayment.toFixed(0))}
           </Text>
         </View>
 
-        <Text style={[styles.risk, { color: riskColor }]}>
-          Based On Monthly Income: {riskLevel}
-        </Text>
+        {/* RISK ANALYSIS */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>RISK ANALYSIS</Text>
 
-        <View
-          style={{
-            padding: 15,
-            borderRadius: 12,
-            marginTop: 20,
-            borderBottomColor: "#1E293B",
-          }}
-        >
-          <Text style={styles.explanation}>{aiAdvice}</Text>
+          <Text style={styles.scoreLabel}>Affordability Score</Text>
+          <Text style={styles.scoreValue}>{score}/100</Text>
+
+          <Text style={styles.valueSmall}>
+            EMI Ratio: {emiRatio}%
+          </Text>
+
+          <Text style={[styles.valueSmall, { marginTop: 10 }]}>
+            10% Income Drop Ratio:
+          </Text>
+
+          <Text style={{ color: stressColor, fontWeight: '600' }}>
+            {stressedRatio}%
+          </Text>
         </View>
 
-        <Text style={{ marginTop: 30, color: "#94A3B8", fontSize: 16 }}>
-          10% Income Drop Scenario
-        </Text>
+        {/* EMERGENCY STABILITY */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>STABILITY CHECK</Text>
 
-        <Text style={{ fontSize: 22, color: "#FFFFFF", fontWeight: "bold" }}>
-          New EMI Ratio: {stressedRatio.toFixed(1)}%
-        </Text>
+          <Text style={styles.valueSmall}>
+            Estimated Stability Buffer
+          </Text>
 
-        <Text style={{ color: stressColor, fontSize: 16, marginTop: 5 }}>
-          {stressRisk}
-        </Text>
+          <Text style={{ color: emergencyColor, fontSize: 18, marginTop: 5 }}>
+            {emergencyMonths} Months Equivalent
+          </Text>
+        </View>
 
-        <Text style={{ marginTop: 30, color: "#94A3B8", fontSize: 16 }}>
-          Emergency Stability Check
-        </Text>
+        {/* AI ADVISORY */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>AI ADVISORY</Text>
+          <Text style={styles.advisoryText}>
+            {aiAdvice}
+          </Text>
+        </View>
 
-        <Text style={{ fontSize: 22, color: "#FFFFFF", fontWeight: "bold" }}>
-          Estimated Buffer: {emergencyMonths.toFixed(1)} Months
-        </Text>
-
-        <Text style={{ color: emergencyColor, fontSize: 16, marginTop: 5 }}>
-          {emergencyStatus}
-        </Text>
-
+        {/* COMPARE BUTTON */}
         <TouchableOpacity
-          style={{
-            marginTop: 40,
-            backgroundColor: "#1E293B",
-            padding: 15,
-            borderRadius: 10,
-            alignItems: "center",
-          }}
+          style={styles.compareButton}
           onPress={() =>
             navigation.navigate("Input", {
               compareMode: true,
-              previousData: route.params,
+              previousData: route.params
             })
           }
         >
-          <Text style={{ color: "#14B8A6", fontWeight: "600" }}>
+          <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>
             Compare Another Option
           </Text>
         </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+/* -------------------- STYLES -------------------- */
+
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#0F172A",
     paddingHorizontal: 20,
     paddingTop: 40,
     paddingBottom: 60,
-    justifyContent: "center",
   },
-  title: {
+
+  headerTitle: {
+    color: '#FFFFFF',
     fontSize: 24,
-    color: "#FFFFFF",
-    marginBottom: 30,
-    textAlign: "center",
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 6,
   },
-  value: {
-    color: "#94A3B8",
-    fontSize: 16,
-    marginTop: 10,
+
+  headerSub: {
+    color: '#64748B',
+    textAlign: 'center',
+    marginBottom: 10,
   },
-  big: {
-    color: "#FFFFFF",
-    fontSize: 28,
-    fontWeight: "bold",
-  },
-  score: {
-    color: "#14B8A6",
-    fontSize: 36,
-    fontWeight: "bold",
-  },
-  risk: {
+
+  card: {
+    backgroundColor: '#1E293B',
+    padding: 18,
+    borderRadius: 16,
     marginTop: 20,
-    fontSize: 18,
-    color: "#F87171",
-    fontWeight: "600",
+    borderWidth: 1,
+    borderColor: '#334155',
   },
-  explanation: {
-    marginTop: 20,
-    fontSize: 15,
-    color: "#CBD5E1",
+
+  sectionTitle: {
+    color: '#94A3B8',
+    fontSize: 14,
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+
+  valueLarge: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    fontWeight: '600',
+  },
+
+  valueSmall: {
+    color: '#CBD5E1',
+    marginTop: 6,
+  },
+
+  scoreLabel: {
+    color: '#94A3B8',
+  },
+
+  scoreValue: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#14B8A6',
+    marginTop: 4,
+  },
+
+  advisoryText: {
+    color: '#CBD5E1',
     lineHeight: 22,
+    marginTop: 8,
+  },
+
+  compareButton: {
+    marginTop: 30,
+    backgroundColor: '#14B8A6',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
   },
 });
