@@ -414,7 +414,7 @@ export default function InputScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
-    paddingBottom: 40,
+    paddingBottom:100,
   },
   title: {
     fontSize: 24,
