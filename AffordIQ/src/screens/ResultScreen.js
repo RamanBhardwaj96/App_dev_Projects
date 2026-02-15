@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import * as Progress from "react-native-progress";
 
 /* -------------------- FORMATTER -------------------- */
@@ -102,7 +101,7 @@ export default function ResultScreen({ route, navigation }) {
   const aiAdvice = generateAIStyleAdvice(income, emi, emiRatio, score);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0F172A" }}>
+    <View style={{ flex: 1, backgroundColor: "#0F172A" }}>
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
@@ -110,7 +109,7 @@ export default function ResultScreen({ route, navigation }) {
         {/* HEADER */}
         <Text style={styles.headerTitle}>{itemName || "Loan Analysis"}</Text>
 
-        <Text style={styles.headerSub}>Smart Loan Decisions. Instantly.</Text>
+        {/* <Text style={styles.headerSub}>Smart Loan Decisions. Instantly.</Text> */}
 
         {/* SCORE RING */}
         <View style={{ alignItems: "center", marginVertical: 15 }}>
@@ -232,7 +231,7 @@ export default function ResultScreen({ route, navigation }) {
           <Text style={styles.primaryButtonText}>Start New Analysis</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -241,8 +240,7 @@ export default function ResultScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 60,
+    paddingBottom: 40,
   },
 
   headerTitle: {
