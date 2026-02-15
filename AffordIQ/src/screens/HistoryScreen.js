@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-
-export default function HistoryScreen({ navigation }) {
+export default function HistoryScreen() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function HistoryScreen({ navigation }) {
     setHistory([]);
   };
 
- if (!history || history.length === 0) {
+   if (!history || history.length === 0) {
   return (
     <View
       style={{
@@ -81,6 +81,32 @@ export default function HistoryScreen({ navigation }) {
   );
 }
 
+  return (
+      <View style={styles.container}>
+        <Text style={styles.title}>History</Text>
+
+        <FlatList
+          data={history}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Text style={styles.emi}>₹{item.emi}</Text>
+              <Text style={styles.sub}>EMI Ratio: {item.emiRatio}%</Text>
+              <Text style={styles.score}>Score: {item.score}</Text>
+              <Text style={styles.time}>
+                {new Date(item.timestamp).toLocaleString()}
+              </Text>
+            </View>
+          )}
+        />
+
+        {history.length > 0 && (
+          <TouchableOpacity style={styles.clearBtn} onPress={clearHistory}>
+            <Text style={{ color: "#EF4444" }}>Clear History</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+  );
 }
 
 const styles = StyleSheet.create({

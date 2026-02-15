@@ -14,14 +14,16 @@ export default function CompareScreen({ route }) {
         ₹{option1.emi} vs ₹{option2.emi}
       </Text>
 
-      <Text style={styles.label}>EMI Ratio</Text>
+      <Text style={styles.label}>EMI Ratio (% of monthly income)</Text>
       <Text style={styles.row}>
         {option1.emiRatio}% vs {option2.emiRatio}%
       </Text>
 
-      <Text style={styles.label}>Affordability Score</Text>
+      <Text style={styles.label}>
+        Affordability Score (Higher score is Better)
+      </Text>
       <Text style={styles.row}>
-        ₹{option1.emi || 0} vs ₹{option2.emi || 0}
+        {option1.score || 0} vs {option2.score || 0}
       </Text>
     </View>
   );
@@ -32,7 +34,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0F172A",
     padding: 20,
-    justifyContent: "center",
   },
   title: {
     fontSize: 24,
