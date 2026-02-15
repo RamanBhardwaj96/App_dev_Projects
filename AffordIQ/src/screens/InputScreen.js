@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Slider from "@react-native-community/slider";
 
 /* -------------------- INDIAN NUMBER TO WORDS -------------------- */
 
@@ -123,9 +124,30 @@ export default function InputScreen({ navigation, route }) {
       setLoanAmount(calculatedLoan.toString());
     }
   }, [totalCost, downPayment]);
+
   const [loanAmount, setLoanAmount] = useState("");
-  const [interest, setInterest] = useState("");
-  const [years, setYears] = useState("");
+  const [interest, setInterest] = useState(9);
+  const [years, setYears] = useState(5);
+
+  const calculateLiveEMI = () => {
+    const P = parseFloat(loanAmount);
+    const r = parseFloat(interest) / 12 / 100;
+    const n = parseFloat(years) * 12;
+    const incomeValue = parseFloat(income);
+
+    if (!P || !r || !n || !incomeValue) return null;
+
+    const emi = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+
+    const emiRatio = (emi / incomeValue) * 100;
+
+    return {
+      emi: emi.toFixed(0),
+      emiRatio: emiRatio.toFixed(1),
+    };
+  };
+
+  const liveData = calculateLiveEMI();
 
   const calculateEMI = async () => {
     const P = parseFloat(loanAmount);
@@ -278,31 +300,76 @@ export default function InputScreen({ navigation, route }) {
           )}
 
           {/* INTEREST */}
-          <TextInput
-            placeholder="Interest Rate (%)"
-            placeholderTextColor="#94A3B8"
-            style={styles.input}
-            keyboardType="numeric"
+          <Text style={{ color: "#94A3B8", marginTop: 10 }}>
+            Interest Rate: {interest || 0}%
+          </Text>
+
+          <Slider
+            style={{ width: "100%", height: 40 }}
+            minimumValue={5}
+            maximumValue={20}
+            step={0.1}
             value={interest}
-            onChangeText={setInterest}
+            minimumTrackTintColor="#14B8A6"
+            maximumTrackTintColor="#334155"
+            thumbTintColor="#14B8A6"
+            onValueChange={(value) => setInterest(parseFloat(value.toFixed(1)))}
           />
 
-          {interest !== "" && !isNaN(interest) && (
-            <Text style={styles.wordText}>{interest}% Annual Interest</Text>
-          )}
+          <Text style={styles.wordText1}>
+            Adjust to simulate different scenarios
+          </Text>
 
           {/* TENURE */}
-          <TextInput
-            placeholder="Loan Tenure (Years)"
-            placeholderTextColor="#94A3B8"
-            style={styles.input}
-            keyboardType="numeric"
+          <Text style={{ color: "#94A3B8", marginTop: 15 }}>
+            Loan Tenure: {years || 1} Years
+          </Text>
+
+          <Slider
+            style={{ width: "100%", height: 40 }}
+            minimumValue={1}
+            maximumValue={40}
+            step={1}
             value={years}
-            onChangeText={setYears}
+            minimumTrackTintColor="#14B8A6"
+            maximumTrackTintColor="#334155"
+            thumbTintColor="#14B8A6"
+            onValueChange={(value) => setYears(value)}
           />
 
-          {years !== "" && !isNaN(years) && (
-            <Text style={styles.wordText}>{years} Years Loan Tenure</Text>
+          <Text style={styles.wordText1}>
+            Adjust to simulate different scenarios
+          </Text>
+
+          {liveData && (
+            <View
+              style={{
+                backgroundColor: "#1E293B",
+                padding: 15,
+                borderRadius: 12,
+                marginBottom: 20,
+              }}
+            >
+              <Text style={{ color: "#94A3B8" }}>Live Preview</Text>
+
+              <Text style={{ color: "#FFFFFF", fontSize: 18, marginTop: 5 }}>
+                Estimated EMI: ₹{formatIndianNumber(liveData.emi)}
+              </Text>
+
+              <Text
+                style={{
+                  marginTop: 5,
+                  color:
+                    liveData.emiRatio <= 35
+                      ? "#22C55E"
+                      : liveData.emiRatio <= 50
+                        ? "#FACC15"
+                        : "#EF4444",
+                }}
+              >
+                EMI Ratio: {liveData.emiRatio}%
+              </Text>
+            </View>
           )}
 
           <TouchableOpacity style={styles.button} onPress={calculateEMI}>
@@ -338,6 +405,11 @@ const styles = StyleSheet.create({
     color: "#94A3B8",
     marginBottom: 15,
     fontSize: 14,
+  },
+  wordText1: {
+    color: "#94A3B8",
+    marginBottom: 15,
+    fontSize: 8,
   },
   button: {
     backgroundColor: "#14B8A6",
