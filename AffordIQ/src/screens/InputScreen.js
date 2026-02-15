@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -108,12 +110,25 @@ export default function InputScreen({ navigation, route }) {
   const previousData = route?.params?.previousData || null;
 
   const [income, setIncome] = useState("");
-  const [price, setPrice] = useState("");
+  const [itemName, setItemName] = useState("");
+  const [totalCost, setTotalCost] = useState("");
+  const [downPayment, setDownPayment] = useState("");
+  const calculatedLoan =
+    totalCost && downPayment
+      ? parseFloat(totalCost) - parseFloat(downPayment)
+      : "";
+
+  useEffect(() => {
+    if (calculatedLoan > 0) {
+      setLoanAmount(calculatedLoan.toString());
+    }
+  }, [totalCost, downPayment]);
+  const [loanAmount, setLoanAmount] = useState("");
   const [interest, setInterest] = useState("");
   const [years, setYears] = useState("");
 
   const calculateEMI = async () => {
-    const P = parseFloat(price);
+    const P = parseFloat(loanAmount);
     const r = parseFloat(interest) / 12 / 100;
     const n = parseFloat(years) * 12;
     const incomeValue = parseFloat(income);
@@ -129,11 +144,14 @@ export default function InputScreen({ navigation, route }) {
     const score = calculateAffordabilityScore(emiRatio);
 
     const resultData = {
+      itemName,
       emi: emi.toFixed(0),
       emiRatio: emiRatio.toFixed(1),
       score,
       timestamp: new Date().toISOString(),
       income: incomeValue,
+      loanAmount: P,
+      tenureMonths: n,
     };
 
     // 🔥 Save to AsyncStorage
@@ -156,82 +174,142 @@ export default function InputScreen({ navigation, route }) {
       navigation.navigate("Result", resultData);
     }
   };
+  useEffect(() => {
+    const total = parseFloat(totalCost);
+    const down = parseFloat(downPayment);
+
+    if (!isNaN(total) && !isNaN(down) && total > down) {
+      const calculated = total - down;
+      setLoanAmount(calculated.toString());
+    } else {
+      setLoanAmount("");
+    }
+  }, [totalCost, downPayment]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0F172A" }}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Enter Details</Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.title}>Enter Details</Text>
 
-        {/* INCOME */}
-        <TextInput
-          placeholder="Monthly Income"
-          placeholderTextColor="#94A3B8"
-          style={styles.input}
-          keyboardType="numeric"
-          value={formatIndianNumber(income)}
-          onChangeText={(text) => {
-            const cleaned = text.replace(/,/g, "");
-            if (!isNaN(cleaned)) setIncome(cleaned);
-          }}
-        />
+          {/* INCOME */}
+          <TextInput
+            placeholder="Monthly Income"
+            placeholderTextColor="#94A3B8"
+            style={styles.input}
+            keyboardType="numeric"
+            value={formatIndianNumber(income)}
+            onChangeText={(text) => {
+              const cleaned = text.replace(/,/g, "");
+              if (!isNaN(cleaned)) setIncome(cleaned);
+            }}
+          />
 
-        {income !== "" && !isNaN(income) && (
-          <Text style={styles.wordText}>
-            {numberToIndianWords(parseInt(income))} Rupees
-          </Text>
-        )}
+          {income !== "" && !isNaN(income) && (
+            <Text style={styles.wordText}>
+              {numberToIndianWords(parseInt(income))} Rupees
+            </Text>
+          )}
 
-        {/* PRICE */}
-        <TextInput
-          placeholder="Purchase Price"
-          placeholderTextColor="#94A3B8"
-          style={styles.input}
-          keyboardType="numeric"
-          value={formatIndianNumber(price)}
-          onChangeText={(text) => {
-            const cleaned = text.replace(/,/g, "");
-            if (!isNaN(cleaned)) setPrice(cleaned);
-          }}
-        />
+          <TextInput
+            placeholder="Item Name (e.g. House, Car)"
+            placeholderTextColor="#94A3B8"
+            style={styles.input}
+            value={itemName}
+            onChangeText={setItemName}
+          />
 
-        {price !== "" && !isNaN(price) && (
-          <Text style={styles.wordText}>
-            {numberToIndianWords(parseInt(price))} Rupees
-          </Text>
-        )}
+          {/* PRICE */}
+          <TextInput
+            placeholder="Total Item Cost"
+            placeholderTextColor="#94A3B8"
+            style={styles.input}
+            keyboardType="numeric"
+            value={formatIndianNumber(totalCost)}
+            onChangeText={(text) => {
+              const cleaned = text.replace(/,/g, "");
+              if (!isNaN(cleaned)) setTotalCost(cleaned);
+            }}
+          />
 
-        {/* INTEREST */}
-        <TextInput
-          placeholder="Interest Rate (%)"
-          placeholderTextColor="#94A3B8"
-          style={styles.input}
-          keyboardType="numeric"
-          value={interest}
-          onChangeText={setInterest}
-        />
+          {totalCost !== "" && !isNaN(totalCost) && (
+            <Text style={styles.wordText}>
+              {numberToIndianWords(parseInt(totalCost))} Rupees
+            </Text>
+          )}
 
-        {interest !== "" && !isNaN(interest) && (
-          <Text style={styles.wordText}>{interest}% Annual Interest</Text>
-        )}
+          <TextInput
+            placeholder="Down Payment"
+            placeholderTextColor="#94A3B8"
+            style={styles.input}
+            keyboardType="numeric"
+            value={formatIndianNumber(downPayment)}
+            onChangeText={(text) => {
+              const cleaned = text.replace(/,/g, "");
+              if (!isNaN(cleaned)) setDownPayment(cleaned);
+            }}
+          />
 
-        {/* TENURE */}
-        <TextInput
-          placeholder="Loan Tenure (Years)"
-          placeholderTextColor="#94A3B8"
-          style={styles.input}
-          keyboardType="numeric"
-          value={years}
-          onChangeText={setYears}
-        />
+          {downPayment !== "" && !isNaN(downPayment) && (
+            <Text style={styles.wordText}>
+              {numberToIndianWords(parseInt(downPayment))} Rupees
+            </Text>
+          )}
 
-        {years !== "" && !isNaN(years) && (
-          <Text style={styles.wordText}>{years} Years Loan Tenure</Text>
-        )}
+          <TextInput
+            placeholder="Loan Amount"
+            placeholderTextColor="#94A3B8"
+            style={[styles.input, { backgroundColor: "#334155" }]}
+            value={formatIndianNumber(loanAmount)}
+            editable={false}
+          />
 
-        <TouchableOpacity style={styles.button} onPress={calculateEMI}>
-          <Text style={styles.buttonText}>Calculate</Text>
-        </TouchableOpacity>
-      </ScrollView>
+          {loanAmount !== "" && !isNaN(loanAmount) && (
+            <Text style={styles.wordText}>
+              {numberToIndianWords(parseInt(loanAmount))} Rupees
+            </Text>
+          )}
+
+          {/* INTEREST */}
+          <TextInput
+            placeholder="Interest Rate (%)"
+            placeholderTextColor="#94A3B8"
+            style={styles.input}
+            keyboardType="numeric"
+            value={interest}
+            onChangeText={setInterest}
+          />
+
+          {interest !== "" && !isNaN(interest) && (
+            <Text style={styles.wordText}>{interest}% Annual Interest</Text>
+          )}
+
+          {/* TENURE */}
+          <TextInput
+            placeholder="Loan Tenure (Years)"
+            placeholderTextColor="#94A3B8"
+            style={styles.input}
+            keyboardType="numeric"
+            value={years}
+            onChangeText={setYears}
+          />
+
+          {years !== "" && !isNaN(years) && (
+            <Text style={styles.wordText}>{years} Years Loan Tenure</Text>
+          )}
+
+          <TouchableOpacity style={styles.button} onPress={calculateEMI}>
+            <Text style={styles.buttonText}>Calculate</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

@@ -119,8 +119,20 @@ ${strategicAdvice}
   `;
 }
 
+function formatIndianNumber(x) {
+  if (!x) return "";
+  const num = x.toString().replace(/,/g, "");
+  const lastThree = num.substring(num.length - 3);
+  const otherNumbers = num.substring(0, num.length - 3);
+  if (otherNumbers !== "") {
+    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
+  }
+  return lastThree;
+}
+
 export default function ResultScreen({ route, navigation }) {
-  const { emi, emiRatio, score, income } = route.params;
+  const { itemName, emi, emiRatio, score, income, loanAmount, tenureMonths } =
+    route.params;
   const originalsalryratio = parseFloat(emiRatio);
   const stressedRatio = originalsalryratio / 0.9; // simulate 10% income drop
   const incomeValue = parseFloat(emi) / (parseFloat(emiRatio) / 100);
@@ -128,6 +140,10 @@ export default function ResultScreen({ route, navigation }) {
 
   const emergencyMonths =
     remainingIncome > 0 ? (remainingIncome * 6) / incomeValue : 0;
+
+  const totalPayment = parseFloat(emi) * tenureMonths;
+  const totalInterest = totalPayment - loanAmount;
+  const interestPercent = ((totalInterest / loanAmount) * 100).toFixed(1);
 
   let riskLevel = "Low Risk";
   let riskColor = "#22C55E";
@@ -180,10 +196,35 @@ export default function ResultScreen({ route, navigation }) {
         </Text>
         <Text style={styles.big}>{emiRatio}%</Text>
 
-        <Text style={styles.value}>Affordability Score</Text>
+        <Text style={[styles.value, { marginTop: 20 }]}>
+          Affordability Score
+        </Text>
         <Text style={styles.score}>{score}/100</Text>
 
-        <Text style={[styles.risk, { color: riskColor }]}>{riskLevel}</Text>
+        <View style={{ marginTop: 25 }}>
+          <Text style={{ color: "#94A3B8" }}>Loan Amount</Text>
+          <Text style={{ color: "#FFFFFF", fontSize: 18 }}>
+            ₹{loanAmount.toLocaleString("en-IN")}
+          </Text>
+
+          <Text style={{ color: "#94A3B8", marginTop: 10 }}>
+            Total Interest Paid
+          </Text>
+          <Text style={{ color: "#F87171", fontSize: 18 }}>
+            ₹{formatIndianNumber(totalInterest)}
+          </Text>
+
+          <Text style={{ color: "#94A3B8", marginTop: 5 }}>
+            Interest Burden: {interestPercent}% of loan
+          </Text>
+
+          <Text style={{ color: "#94A3B8", marginTop: 10 }}>Total Payable</Text>
+          <Text style={{ color: "#FFFFFF", fontSize: 18 }}>
+            ₹{formatIndianNumber(totalPayment)}
+          </Text>
+        </View>
+
+        <Text style={[styles.risk, { color: riskColor }]}>Based On Monthly Income: {riskLevel}</Text>
 
         <View
           style={{
