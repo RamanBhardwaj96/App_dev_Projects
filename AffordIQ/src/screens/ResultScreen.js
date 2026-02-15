@@ -224,7 +224,9 @@ export default function ResultScreen({ route, navigation }) {
           </Text>
         </View>
 
-        <Text style={[styles.risk, { color: riskColor }]}>Based On Monthly Income: {riskLevel}</Text>
+        <Text style={[styles.risk, { color: riskColor }]}>
+          Based On Monthly Income: {riskLevel}
+        </Text>
 
         <View
           style={{
