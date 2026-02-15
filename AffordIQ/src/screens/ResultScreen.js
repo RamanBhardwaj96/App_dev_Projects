@@ -1,35 +1,44 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import * as Progress from 'react-native-progress';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import * as Progress from "react-native-progress";
 
-/* -------------------- INDIAN FORMAT -------------------- */
+/* -------------------- FORMATTER -------------------- */
 
 function formatIndianNumber(x) {
   if (!x && x !== 0) return "";
-  const num = x.toString().replace(/,/g, '');
+  const num = x.toString().replace(/,/g, "");
   const lastThree = num.substring(num.length - 3);
   const otherNumbers = num.substring(0, num.length - 3);
-  if (otherNumbers !== '') {
+  if (otherNumbers !== "") {
     return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
   }
   return lastThree;
 }
 
-/* -------------------- AI SIMULATION -------------------- */
+/* -------------------- AI ADVISORY -------------------- */
 
 function generateAIStyleAdvice(income, emi, emiRatio, score) {
   const ratio = parseFloat(emiRatio);
   const disposableIncome = parseFloat(income) - parseFloat(emi);
 
-  let message = "";
+  let insight = "";
 
   if (score >= 75) {
-    message = "This commitment appears financially stable and well within a safe borrowing range.";
+    insight =
+      "This loan structure appears financially stable. Your borrowing level remains controlled and manageable.";
   } else if (score >= 40) {
-    message = "This purchase introduces moderate financial pressure. Consider improving structure for better flexibility.";
+    insight =
+      "This commitment introduces moderate financial pressure. Improving structure can increase safety.";
   } else {
-    message = "This obligation may significantly strain your finances and reduce adaptability.";
+    insight =
+      "This obligation may significantly strain your finances and reduce adaptability in uncertain scenarios.";
   }
 
   return `
@@ -37,66 +46,74 @@ Your EMI of ₹${emi} consumes ${ratio}% of your monthly income.
 
 After EMI, your estimated disposable income is ₹${disposableIncome.toFixed(0)} per month.
 
-${message}
-  `;
+${insight}
+`;
 }
 
 /* -------------------- COMPONENT -------------------- */
 
 export default function ResultScreen({ route, navigation }) {
-
   const {
     itemName,
+    income,
+    totalCost,
+    downPayment,
+    interest,
+    years,
+    loanAmount,
     emi,
     emiRatio,
     score,
-    income,
-    loanAmount,
-    tenureMonths
+    tenureMonths,
   } = route.params;
+
+  /* -------- FINANCIAL CALCULATIONS -------- */
 
   const totalPayment = parseFloat(emi) * tenureMonths;
   const totalInterest = totalPayment - loanAmount;
 
-  /* ---------- 10% INCOME DROP SIMULATION ---------- */
+  /* -------- 10% INCOME DROP SIMULATION -------- */
 
   const stressedRatio = (parseFloat(emiRatio) / 0.9).toFixed(1);
 
-  let stressColor =
-    stressedRatio <= 35 ? "#22C55E" :
-    stressedRatio <= 50 ? "#FACC15" :
-    "#EF4444";
+  const stressColor =
+    stressedRatio <= 35
+      ? "#22C55E"
+      : stressedRatio <= 50
+        ? "#FACC15"
+        : "#EF4444";
 
-  /* ---------- EMERGENCY STABILITY CHECK ---------- */
+  /* -------- STABILITY CHECK -------- */
 
   const disposableIncome = parseFloat(income) - parseFloat(emi);
+
   const emergencyMonths =
     disposableIncome > 0
       ? ((disposableIncome * 6) / parseFloat(income)).toFixed(1)
       : 0;
 
-  let emergencyColor =
-    emergencyMonths >= 6 ? "#22C55E" :
-    emergencyMonths >= 3 ? "#FACC15" :
-    "#EF4444";
+  const emergencyColor =
+    emergencyMonths >= 6
+      ? "#22C55E"
+      : emergencyMonths >= 3
+        ? "#FACC15"
+        : "#EF4444";
 
   const aiAdvice = generateAIStyleAdvice(income, emi, emiRatio, score);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0F172A' }}>
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0F172A" }}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         {/* HEADER */}
-        <Text style={styles.headerTitle}>
-          {itemName || "Loan Analysis"}
-        </Text>
+        <Text style={styles.headerTitle}>{itemName || "Loan Analysis"}</Text>
 
-        <Text style={styles.headerSub}>
-          Financial Overview
-        </Text>
+        <Text style={styles.headerSub}>Smart Loan Decisions. Instantly.</Text>
 
         {/* SCORE RING */}
-        <View style={{ alignItems: 'center', marginVertical: 15 }}>
+        <View style={{ alignItems: "center", marginVertical: 15 }}>
           <Progress.Circle
             size={140}
             progress={score / 100}
@@ -104,13 +121,15 @@ export default function ResultScreen({ route, navigation }) {
             formatText={() => `${score}`}
             thickness={12}
             color={
-              score >= 75 ? "#22C55E" :
-              score >= 40 ? "#FACC15" :
-              "#EF4444"
+              score >= 75 ? "#22C55E" : score >= 40 ? "#FACC15" : "#EF4444"
             }
             unfilledColor="#1E293B"
             borderWidth={0}
-            textStyle={{ color: '#FFFFFF', fontSize: 28, fontWeight: 'bold' }}
+            textStyle={{
+              color: "#FFFFFF",
+              fontSize: 28,
+              fontWeight: "bold",
+            }}
           />
         </View>
 
@@ -118,12 +137,14 @@ export default function ResultScreen({ route, navigation }) {
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>LOAN SUMMARY</Text>
 
-          <Text style={styles.valueLarge}>
-            EMI: ₹{formatIndianNumber(emi)}
-          </Text>
+          <Text style={styles.valueLarge}>EMI: ₹{formatIndianNumber(emi)}</Text>
 
           <Text style={styles.valueSmall}>
             Loan Amount: ₹{formatIndianNumber(loanAmount.toFixed(0))}
+          </Text>
+
+          <Text style={styles.valueSmall}>
+            Down Payment: ₹{formatIndianNumber(downPayment)}
           </Text>
 
           <Text style={styles.valueSmall}>
@@ -140,28 +161,35 @@ export default function ResultScreen({ route, navigation }) {
           <Text style={styles.sectionTitle}>RISK ANALYSIS</Text>
 
           <Text style={styles.scoreLabel}>Affordability Score</Text>
-          <Text style={styles.scoreValue}>{score}/100</Text>
 
-          <Text style={styles.valueSmall}>
-            EMI Ratio: {emiRatio}%
+          <Text
+            style={[
+              styles.scoreValue,
+              {
+                color:
+                  score >= 75 ? "#22C55E" : score >= 40 ? "#FACC15" : "#EF4444",
+              },
+            ]}
+          >
+            {score}/100
           </Text>
+
+          <Text style={styles.valueSmall}>EMI Ratio: {emiRatio}%</Text>
 
           <Text style={[styles.valueSmall, { marginTop: 10 }]}>
             10% Income Drop Ratio:
           </Text>
 
-          <Text style={{ color: stressColor, fontWeight: '600' }}>
+          <Text style={{ color: stressColor, fontWeight: "600" }}>
             {stressedRatio}%
           </Text>
         </View>
 
-        {/* EMERGENCY STABILITY */}
+        {/* STABILITY CHECK */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>STABILITY CHECK</Text>
 
-          <Text style={styles.valueSmall}>
-            Estimated Stability Buffer
-          </Text>
+          <Text style={styles.valueSmall}>Estimated Stability Buffer</Text>
 
           <Text style={{ color: emergencyColor, fontSize: 18, marginTop: 5 }}>
             {emergencyMonths} Months Equivalent
@@ -171,9 +199,8 @@ export default function ResultScreen({ route, navigation }) {
         {/* AI ADVISORY */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>AI ADVISORY</Text>
-          <Text style={styles.advisoryText}>
-            {aiAdvice}
-          </Text>
+
+          <Text style={styles.advisoryText}>{aiAdvice}</Text>
         </View>
 
         {/* COMPARE BUTTON */}
@@ -182,15 +209,28 @@ export default function ResultScreen({ route, navigation }) {
           onPress={() =>
             navigation.navigate("Input", {
               compareMode: true,
-              previousData: route.params
+              previousData: route.params,
+              prefill: {
+                itemName,
+                income,
+                totalCost,
+                downPayment,
+                interest,
+                years,
+              },
             })
           }
         >
-          <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>
-            Compare Another Option
-          </Text>
+          <Text style={styles.primaryButtonText}>Compare Another Option</Text>
         </TouchableOpacity>
 
+        {/* RESET BUTTON */}
+        <TouchableOpacity
+          style={styles.resetButton}
+          onPress={() => navigation.navigate("Input")}
+        >
+          <Text style={styles.primaryButtonText}>Start New Analysis</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -206,68 +246,80 @@ const styles = StyleSheet.create({
   },
 
   headerTitle: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 24,
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
     marginBottom: 6,
   },
 
   headerSub: {
-    color: '#64748B',
-    textAlign: 'center',
+    color: "#64748B",
+    textAlign: "center",
     marginBottom: 10,
   },
 
   card: {
-    backgroundColor: '#1E293B',
+    backgroundColor: "#1E293B",
     padding: 18,
     borderRadius: 16,
     marginTop: 20,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: "#334155",
   },
 
   sectionTitle: {
-    color: '#94A3B8',
+    color: "#94A3B8",
     fontSize: 14,
     letterSpacing: 1,
     marginBottom: 8,
   },
 
   valueLarge: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 22,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   valueSmall: {
-    color: '#CBD5E1',
+    color: "#CBD5E1",
     marginTop: 6,
   },
 
   scoreLabel: {
-    color: '#94A3B8',
+    color: "#94A3B8",
   },
 
   scoreValue: {
     fontSize: 26,
-    fontWeight: '700',
-    color: '#14B8A6',
+    fontWeight: "700",
     marginTop: 4,
   },
 
   advisoryText: {
-    color: '#CBD5E1',
+    color: "#CBD5E1",
     lineHeight: 22,
     marginTop: 8,
   },
 
   compareButton: {
     marginTop: 30,
-    backgroundColor: '#14B8A6',
+    backgroundColor: "#14B8A6",
     padding: 15,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
+  },
+
+  resetButton: {
+    marginTop: 15,
+    backgroundColor: "#334155",
+    padding: 15,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+
+  primaryButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
 });

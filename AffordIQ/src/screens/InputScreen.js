@@ -109,6 +109,7 @@ function calculateAffordabilityScore(emiRatio) {
 export default function InputScreen({ navigation, route }) {
   const compareMode = route?.params?.compareMode === true;
   const previousData = route?.params?.previousData || null;
+  const prefill = route?.params?.prefill;
 
   const [income, setIncome] = useState("");
   const [itemName, setItemName] = useState("");
@@ -167,12 +168,15 @@ export default function InputScreen({ navigation, route }) {
 
     const resultData = {
       itemName,
+      income: incomeValue,
+      totalCost,
+      downPayment,
+      interest,
+      years,
+      loanAmount: P,
       emi: emi.toFixed(0),
       emiRatio: emiRatio.toFixed(1),
       score,
-      timestamp: new Date().toISOString(),
-      income: incomeValue,
-      loanAmount: P,
       tenureMonths: n,
     };
 
@@ -207,6 +211,32 @@ export default function InputScreen({ navigation, route }) {
       setLoanAmount("");
     }
   }, [totalCost, downPayment]);
+
+  useEffect(() => {
+    if (prefill) {
+      setItemName(prefill.itemName ?? "");
+      setIncome(prefill.income?.toString() ?? "");
+      setTotalCost(prefill.totalCost?.toString() ?? "");
+      setDownPayment(prefill.downPayment?.toString() ?? "");
+      setInterest(prefill.interest ?? 9);
+      setYears(prefill.years ?? 5);
+    }
+  }, [prefill]);
+
+  useEffect(() => {
+    if (route.params?.prefill) {
+      const data = route.params.prefill;
+
+      setItemName(data.itemName ?? "");
+      setIncome(data.income?.toString() ?? "");
+      setTotalCost(data.totalCost?.toString() ?? "");
+      setDownPayment(data.downPayment?.toString() ?? "");
+      setInterest(data.interest ?? 9);
+      setYears(data.years ?? 5);
+    }
+  }, [route.params]);
+
+  console.log("Prefill:", route.params?.prefill);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0F172A" }}>
