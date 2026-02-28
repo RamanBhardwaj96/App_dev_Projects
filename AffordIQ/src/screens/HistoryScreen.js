@@ -9,7 +9,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function HistoryScreen() {
+export default function HistoryScreen({ navigation }) {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
@@ -32,80 +32,80 @@ export default function HistoryScreen() {
     setHistory([]);
   };
 
-   if (!history || history.length === 0) {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#0F172A",
-        paddingHorizontal: 20,
-      }}
-    >
-      <Text
+  if (!history || history.length === 0) {
+    return (
+      <View
         style={{
-          fontSize: 18,
-          color: "#FFFFFF",
-          fontWeight: "600",
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#0F172A",
+          paddingHorizontal: 20,
         }}
       >
-        No History Yet
-      </Text>
-
-      <Text
-        style={{
-          marginTop: 8,
-          color: "#64748B",
-          textAlign: "center",
-        }}
-      >
-        Your previous loan analyses will appear here.
-      </Text>
-
-      <TouchableOpacity
-        style={{
-          marginTop: 20,
-          backgroundColor: "#14B8A6",
-          paddingVertical: 12,
-          paddingHorizontal: 25,
-          borderRadius: 8,
-        }}
-        onPress={() => navigation.navigate("Input")}
-      >
-        <Text style={{ color: "white", fontWeight: "600" }}>
-          Start Analysis
+        <Text
+          style={{
+            fontSize: 18,
+            color: "#FFFFFF",
+            fontWeight: "600",
+          }}
+        >
+          No History Yet
         </Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
+
+        <Text
+          style={{
+            marginTop: 8,
+            color: "#64748B",
+            textAlign: "center",
+          }}
+        >
+          Your previous loan analyses will appear here.
+        </Text>
+
+        <TouchableOpacity
+          style={{
+            marginTop: 20,
+            backgroundColor: "#14B8A6",
+            paddingVertical: 12,
+            paddingHorizontal: 25,
+            borderRadius: 8,
+          }}
+          onPress={() => navigation.navigate("Input")}
+        >
+          <Text style={{ color: "white", fontWeight: "600" }}>
+            Start Analysis
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
-      <View style={styles.container}>
-        <Text style={styles.title}>History</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>History</Text>
 
-        <FlatList
-          data={history}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.emi}>₹{item.emi}</Text>
-              <Text style={styles.sub}>EMI Ratio: {item.emiRatio}%</Text>
-              <Text style={styles.score}>Score: {item.score}</Text>
-              <Text style={styles.time}>
-                {new Date(item.timestamp).toLocaleString()}
-              </Text>
-            </View>
-          )}
-        />
-
-        {history.length > 0 && (
-          <TouchableOpacity style={styles.clearBtn} onPress={clearHistory}>
-            <Text style={{ color: "#EF4444" }}>Clear History</Text>
-          </TouchableOpacity>
+      <FlatList
+        data={history}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.emi}>₹{item.emi}</Text>
+            <Text style={styles.sub}>EMI Ratio: {item.emiRatio}%</Text>
+            <Text style={styles.score}>Score: {item.score}</Text>
+            <Text style={styles.time}>
+              {new Date(item.timestamp).toLocaleString()}
+            </Text>
+          </View>
         )}
-      </View>
+      />
+
+      {history.length > 0 && (
+        <TouchableOpacity style={styles.clearBtn} onPress={clearHistory}>
+          <Text style={{ color: "#EF4444" }}>Clear History</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   );
 }
 
