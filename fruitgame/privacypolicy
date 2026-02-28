@@ -1,0 +1,126 @@
+FRUIT CATCHER — PRIVACY POLICY
+================================
+Effective Date: February 28, 2026
+Last Updated: February 28, 2026
+
+
+OVERVIEW
+--------
+Thank you for playing Fruit Catcher. Your privacy matters to us. This
+Privacy Policy explains how the Fruit Catcher app ("the App") handles
+information when you play our mobile game.
+
+Fruit Catcher is a simple, offline game designed for players of all ages.
+We are committed to full transparency about our data practices.
+
+
+1. INFORMATION WE COLLECT
+--------------------------
+Fruit Catcher does NOT collect, store, or transmit any personal
+information. We do not collect:
+
+  - Your name, email address, or contact information
+  - Location or GPS data
+  - Device identifiers or advertising IDs
+  - Photos, contacts, or any other device data
+  - Usage analytics or behavioural tracking data
+  - Payment information of any kind
+
+The only data stored by the App is your high score, saved locally
+on your device using standard device storage (AsyncStorage). This
+data never leaves your device and is never accessible to us.
+
+
+2. LOCAL STORAGE
+----------------
+Fruit Catcher stores the following on your device only:
+
+  - Your best (high) score — to persist your achievement between
+    sessions.
+
+This data is stored using React Native AsyncStorage and is never
+transmitted to any server, third party, or cloud service.
+
+
+3. PERMISSIONS AND INTERNET ACCESS
+------------------------------------
+Fruit Catcher does not require any special device permissions. The
+App does NOT request or use:
+
+  - Internet access or network connectivity
+  - Microphone access
+  - Camera access
+  - Access to contacts or calendar
+  - Location services
+  - Background processes
+
+The App runs entirely offline. No internet connection is required
+or used at any time.
+
+
+4. CHILDREN'S PRIVACY
+-----------------------
+Fruit Catcher is suitable for all ages, including children under 13.
+Because we do not collect any personal information from any user,
+the App complies with:
+
+  - Children's Online Privacy Protection Act (COPPA) — USA
+  - General Data Protection Regulation (GDPR) — EU
+  - Equivalent children's privacy laws in other jurisdictions
+
+We do not knowingly collect personal information from children or
+adults. Parents and guardians can allow their children to use this
+App with full confidence.
+
+
+5. THIRD-PARTY SERVICES
+------------------------
+Fruit Catcher does not integrate any third-party services, including:
+
+  - Advertising networks (no ads are shown in this App)
+  - Analytics platforms (e.g. Firebase, Mixpanel, Amplitude)
+  - Social media SDKs (e.g. Facebook, Google Sign-In)
+  - Crash reporting services
+  - Cloud storage or sync services
+
+No third party has access to any data through this App because no
+data is collected.
+
+
+6. AUDIO AND SOUND
+-------------------
+All sounds in Fruit Catcher are generated programmatically inside
+the App using synthesised audio. No audio recordings are made,
+stored, or transmitted. The App does not access your microphone.
+
+
+7. DATA SECURITY
+-----------------
+Since Fruit Catcher does not collect or transmit any personal data,
+there is no personal data at risk. Your high score is held in your
+device's local storage, protected by your device's own security.
+
+
+8. CHANGES TO THIS PRIVACY POLICY
+------------------------------------
+We may update this Privacy Policy from time to time. Any changes
+will be reflected with an updated effective date. Because we do not
+collect personal data or require account creation, we cannot notify
+users directly of changes. Continued use of the App after any update
+constitutes acceptance of the revised policy.
+
+
+9. CONTACT US
+--------------
+If you have any questions or concerns about this Privacy Policy,
+please contact us:
+
+  App Name   : Fruit Catcher
+  Email      :ramanbhardwaj364@gmail.com
+
+We will respond to all enquiries within 30 days.
+
+
+---
+Fruit Catcher | Privacy Policy | February 28, 2026
+This app is ad-free and collects no personal data.
