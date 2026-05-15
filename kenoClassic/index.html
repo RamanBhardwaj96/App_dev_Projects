@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Keno Classic</title>
+  </head>
+  <body>
+    <div id="loading-screen">
+      <div class="loading-content">
+        <div class="logo large">Keno<span>Classic</span></div>
+        <div class="progress-container">
+          <div id="progress-bar"></div>
+        </div>
+        <p id="loading-text">Initializing Game...</p>
+      </div>
+    </div>
+    <div id="app">
+      <button id="info-btn">!</button>
+      <div id="game-container">
+        <div id="game-header">
+          <div class="logo">Keno<span>Classic</span></div>
+        </div>
+      </div>
+      <div id="paytable-modal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn">&times;</span>
+          <h2>Keno Paytable & Rules</h2>
+          <div class="rules-section">
+            <p>Select 10 numbers from the 40 available on the board.</p>
+            <p>20 balls will be drawn at random. The more matches you get, the higher the payout!</p>
+          </div>
+          <table id="payout-table">
+            <thead>
+              <tr>
+                <th>Matches</th>
+                <th>Payout (x Bet)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1-5</td><td>0.1x</td></tr>
+              <tr><td>6</td><td>1.2x</td></tr>
+              <tr><td>7</td><td>2.5x</td></tr>
+              <tr><td>8</td><td>8x</td></tr>
+              <tr><td>9</td><td>25x</td></tr>
+              <tr><td>10</td><td>100x</td></tr>
+            </tbody>
+
+
+
+
+          </table>
+          <p class="rtp-info">Theoretical RTP: 97.1%</p>
+        </div>
+      </div>
+        <div id="ui-overlay">
+          <div id="message">Select 10 numbers</div>
+          <div class="stats">
+            <div class="stat-item">Hits: <span id="drawn-count">0</span>/20</div>
+            <div class="stat-item">Match: <span id="hit-rate">0</span>/10</div>
+            <div class="stat-item" id="win-stat">Win: <span id="win"></span></div>
+          </div>
+          <div class="controls">
+            <button id="clear-btn">Clear</button>
+            <button id="quick-pick-btn">Quick Pick</button>
+            <button id="autoplay-btn">Auto Play: OFF</button>
+            <button id="play-btn" disabled>Play</button>
+          </div>
+        </div>
+      <div id="bottom-bar">
+        <div class="bottom-item">BALANCE: $<span id="balance">1000</span></div>
+        <div class="bottom-item" id="rtp-stat" style="display: none;">RTP: <span id="rtp">0</span>%</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
