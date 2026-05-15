@@ -88,16 +88,22 @@ export default function HistoryScreen({ navigation }) {
       <FlatList
         data={history}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.emi}>₹{item.emi}</Text>
-            <Text style={styles.sub}>EMI Ratio: {item.emiRatio}%</Text>
-            <Text style={styles.score}>Score: {item.score}</Text>
-            <Text style={styles.time}>
-              {new Date(item.timestamp).toLocaleString()}
-            </Text>
-          </View>
-        )}
+        renderItem={({ item }) => {
+          const timestamp = item.timestamp ? new Date(item.timestamp) : null;
+          const formattedTime =
+            timestamp && !isNaN(timestamp.getTime())
+              ? timestamp.toLocaleString()
+              : "Unknown date";
+
+          return (
+            <View style={styles.card}>
+              <Text style={styles.emi}>₹{item.emi}</Text>
+              <Text style={styles.sub}>EMI Ratio: {item.emiRatio}%</Text>
+              <Text style={styles.score}>Score: {item.score}</Text>
+              <Text style={styles.time}>{formattedTime}</Text>
+            </View>
+          );
+        }}
       />
 
       {history.length > 0 && (

@@ -71,7 +71,7 @@ function HomeScreen({ navigation }) {
           fontSize: 12,
         }}
       >
-        Version 1.0.0
+        Version 2.0.0
       </Text>
     </View>
   );

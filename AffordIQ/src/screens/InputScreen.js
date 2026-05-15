@@ -177,6 +177,7 @@ export default function InputScreen({ navigation, route }) {
       emiRatio: emiRatio.toFixed(1),
       score,
       tenureMonths: n,
+      timestamp: new Date().toISOString(),
     };
 
     // 🔥 Save to AsyncStorage
